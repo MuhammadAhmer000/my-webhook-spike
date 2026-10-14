@@ -1,16 +1,16 @@
-# project/app/main.py
-
-from fastapi import FastAPI, Depends
-from app.config import get_settings, Settings
-
+from fastapi import FastAPI, Request
 
 app = FastAPI()
 
+@app.post("/test/")
+async def test_func(request: Request):
+    body = await request.body()
 
-@app.get("/ping")
-async def pong(settings: Settings = Depends(get_settings)):
-    return {
-        "ping": "pong!",
-        "environment": settings.environment,
-        "testing": settings.testing
-    }
+    headers = dict(request.headers)
+    if "authorization" in headers:
+        headers["authorization"] = "***"
+
+    print("webhook body:", body)
+    print("webhook headers:", headers)
+
+    return {"status": "received"}
